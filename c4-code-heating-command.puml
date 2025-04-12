@@ -1,0 +1,61 @@
+@startuml
+
+package "heating" {
+    class HeatingCommand {
+        +Long deviceId
+        +CommandType type
+        +Double targetTemperature
+        +execute()
+    }
+
+    enum CommandType {
+        TURN_ON
+        TURN_OFF
+        SET_TEMPERATURE
+    }
+
+    class HeatingCommandHandler {
+        -HeatingStateManager stateManager
+        -EventPublisher eventPublisher
+        +handleCommand(HeatingCommand)
+    }
+
+    class HeatingStateManager {
+        -HeatingRepository repository
+        +updateState(HeatingCommand)
+        +getCurrentState(Long)
+    }
+
+    class EventPublisher {
+        -KafkaTemplate<String, Event> kafkaTemplate
+        +publishEvent(Event)
+    }
+
+    class HeatingRepository {
+        +save(HeatingState)
+        +findById(Long)
+    }
+
+    class HeatingState {
+        +Long id
+        +boolean isOn
+        +double targetTemperature
+        +double currentTemperature
+    }
+
+    class Event {
+        +String type
+        +Long deviceId
+        +Map<String, Object> payload
+    }
+}
+
+HeatingCommand --> CommandType
+HeatingCommandHandler --> HeatingCommand
+HeatingCommandHandler --> HeatingStateManager
+HeatingCommandHandler --> EventPublisher
+HeatingStateManager --> HeatingRepository
+HeatingRepository --> HeatingState
+EventPublisher --> Event
+
+@enduml 

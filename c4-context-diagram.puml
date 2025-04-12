@@ -1,0 +1,17 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+LAYOUT_WITH_LEGEND()
+
+title Контекстная диаграмма системы "Умный дом"
+
+Person(user, "Пользователь", "Владелец умного дома")
+System(smart_home_app, "Монолитное приложение", "Управление отоплением и мониторинг температуры")
+System_Ext(temperature_sensors, "Датчики температуры", "IoT устройства для измерения температуры")
+System_Ext(postgres_db, "PostgreSQL", "База данных")
+
+Rel(user, smart_home_app, "Управляет отоплением и просматривает температуру", "HTTP/REST")
+Rel(smart_home_app, temperature_sensors, "Получает данные о температуре", "MQTT")
+Rel(smart_home_app, postgres_db, "Хранит и извлекает данные", "JDBC")
+
+@enduml 

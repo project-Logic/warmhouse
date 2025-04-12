@@ -1,0 +1,99 @@
+architecture:
+  name: "Микросервисная архитектура системы 'Умный дом'"
+  description: "Архитектура на основе доменов и ограниченных контекстов"
+
+services:
+  - name: "API Gateway"
+    type: "infrastructure"
+    technology: "Spring Cloud Gateway"
+    responsibilities:
+      - "Маршрутизация запросов"
+      - "Агрегация данных"
+      - "Аутентификация"
+      - "Rate limiting"
+    dependencies: []
+
+  - name: "Heating Service"
+    type: "core"
+    technology: "Spring Boot"
+    responsibilities:
+      - "Управление отоплением"
+      - "Обработка команд"
+      - "Управление состоянием"
+    dependencies:
+      - "PostgreSQL"
+      - "Kafka"
+
+  - name: "Temperature Service"
+    type: "core"
+    technology: "Spring Boot"
+    responsibilities:
+      - "Мониторинг температуры"
+      - "Агрегация данных"
+      - "Генерация событий"
+    dependencies:
+      - "PostgreSQL"
+      - "Kafka"
+
+  - name: "Device Service"
+    type: "supporting"
+    technology: "Spring Boot"
+    responsibilities:
+      - "Управление устройствами"
+      - "Конфигурация"
+      - "Мониторинг состояния"
+    dependencies:
+      - "PostgreSQL"
+      - "Kafka"
+
+  - name: "Auth Service"
+    type: "generic"
+    technology: "Spring Boot"
+    responsibilities:
+      - "Аутентификация"
+      - "Авторизация"
+      - "Управление пользователями"
+    dependencies:
+      - "PostgreSQL"
+
+infrastructure:
+  - name: "PostgreSQL"
+    type: "database"
+    purpose: "Хранение данных"
+    services:
+      - "Heating Service"
+      - "Temperature Service"
+      - "Device Service"
+      - "Auth Service"
+
+  - name: "Kafka"
+    type: "message-broker"
+    purpose: "Шина событий"
+    services:
+      - "Heating Service"
+      - "Temperature Service"
+      - "Device Service"
+
+communication:
+  - type: "HTTP/REST"
+    protocol: "REST"
+    services:
+      - "API Gateway -> Heating Service"
+      - "API Gateway -> Temperature Service"
+      - "API Gateway -> Device Service"
+      - "API Gateway -> Auth Service"
+
+  - type: "Event-Driven"
+    protocol: "Kafka"
+    services:
+      - "Heating Service -> Kafka"
+      - "Temperature Service -> Kafka"
+      - "Device Service -> Kafka"
+
+  - type: "Database"
+    protocol: "JDBC"
+    services:
+      - "Heating Service -> PostgreSQL"
+      - "Temperature Service -> PostgreSQL"
+      - "Device Service -> PostgreSQL"
+      - "Auth Service -> PostgreSQL" 

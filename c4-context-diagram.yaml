@@ -1,0 +1,56 @@
+diagram:
+  type: "C4_Context"
+  title: "Контекстная диаграмма системы 'Умный дом'"
+  description: "Диаграмма показывает взаимодействие монолитного приложения с внешними системами"
+
+elements:
+  - type: "Person"
+    id: "user"
+    name: "Пользователь"
+    description: "Владелец умного дома"
+    tags: ["actor"]
+
+  - type: "System"
+    id: "smart_home_app"
+    name: "Монолитное приложение"
+    description: "Управление отоплением и мониторинг температуры"
+    tags: ["internal"]
+
+  - type: "System_Ext"
+    id: "temperature_sensors"
+    name: "Датчики температуры"
+    description: "IoT устройства для измерения температуры"
+    tags: ["external"]
+
+  - type: "System_Ext"
+    id: "postgres_db"
+    name: "PostgreSQL"
+    description: "База данных"
+    tags: ["external"]
+
+relationships:
+  - from: "user"
+    to: "smart_home_app"
+    description: "Управляет отоплением и просматривает температуру"
+    technology: "HTTP/REST"
+
+  - from: "smart_home_app"
+    to: "temperature_sensors"
+    description: "Получает данные о температуре"
+    technology: "MQTT"
+
+  - from: "smart_home_app"
+    to: "postgres_db"
+    description: "Хранит и извлекает данные"
+    technology: "JDBC"
+
+layout:
+  show_legend: true
+  show_notes: true
+  show_tags: true
+
+style:
+  theme: "default"
+  font_size: 14
+  line_width: 2
+  padding: 20 

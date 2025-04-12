@@ -1,0 +1,26 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+LAYOUT_WITH_LEGEND()
+
+title Компоненты микросервиса "Управление отоплением"
+
+Container_Boundary(heating_service, "Heating Service") {
+    Component(api, "Heating API", "Spring REST Controller", "Предоставляет REST API для управления отоплением")
+    Component(command_handler, "Command Handler", "Spring Service", "Обрабатывает команды управления отоплением")
+    Component(state_manager, "State Manager", "Spring Service", "Управляет состоянием систем отопления")
+    Component(event_publisher, "Event Publisher", "Spring Service", "Публикует события в Kafka")
+    Component(repository, "Heating Repository", "Spring Data JPA", "Управляет доступом к данным")
+}
+
+ContainerDb(postgres, "PostgreSQL")
+Container(kafka, "Kafka")
+
+Rel(api, command_handler, "Вызывает")
+Rel(command_handler, state_manager, "Обновляет состояние")
+Rel(command_handler, event_publisher, "Публикует события")
+Rel(state_manager, repository, "Сохраняет состояние")
+Rel(repository, postgres, "JDBC")
+Rel(event_publisher, kafka, "Kafka")
+
+@enduml 
