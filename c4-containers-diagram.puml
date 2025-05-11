@@ -1,0 +1,35 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+LAYOUT_WITH_LEGEND()
+
+title Микросервисная архитектура системы "Умный дом"
+
+Person(user, "Пользователь", "Владелец умного дома")
+
+System_Boundary(system, "Система 'Умный дом'") {
+    Container(api_gateway, "API Gateway", "Spring Cloud Gateway", "Маршрутизация и агрегация запросов")
+    Container(heating_service, "Heating Service", "Spring Boot", "Управление отоплением")
+    Container(temperature_service, "Temperature Service", "Spring Boot", "Мониторинг температуры")
+    Container(device_service, "Device Service", "Spring Boot", "Управление устройствами")
+    Container(auth_service, "Auth Service", "Spring Boot", "Аутентификация и авторизация")
+    Container(kafka, "Kafka", "Apache Kafka", "Шина событий")
+    ContainerDb(postgres, "PostgreSQL", "База данных")
+}
+
+Rel(user, api_gateway, "HTTP/REST")
+Rel(api_gateway, heating_service, "HTTP/REST")
+Rel(api_gateway, temperature_service, "HTTP/REST")
+Rel(api_gateway, device_service, "HTTP/REST")
+Rel(api_gateway, auth_service, "HTTP/REST")
+
+Rel(heating_service, kafka, "Публикует события", "Kafka")
+Rel(temperature_service, kafka, "Публикует события", "Kafka")
+Rel(device_service, kafka, "Публикует события", "Kafka")
+
+Rel(heating_service, postgres, "JDBC")
+Rel(temperature_service, postgres, "JDBC")
+Rel(device_service, postgres, "JDBC")
+Rel(auth_service, postgres, "JDBC")
+
+@enduml 
